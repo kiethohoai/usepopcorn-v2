@@ -17,3 +17,4 @@
 ### 016 PropTypes
 ### 001 How React Works Behind the Scenes (Section Overview)
 ### 002 Project Setup and Walkthrough
+### 003 Components, Instances, and Elements
