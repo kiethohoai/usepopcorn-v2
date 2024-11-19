@@ -22,3 +22,4 @@
 ### 005 How Rendering Works Overview
 ### 006 How Rendering Works The Render Phase
 ### 018 Section Summary Practical Takeaways
+### 12 Effects and Data Fetching
