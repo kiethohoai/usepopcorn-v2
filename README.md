@@ -8,3 +8,4 @@
 ### 008 Fixing Prop Drilling With Composition (And Building a Layout)
 ### 009 Using Composition to Make a Reusable Box
 ### 009 Using Composition to Make a Reusable Box v2
+### 010 Passing Elements as Props (Alternative to children)
