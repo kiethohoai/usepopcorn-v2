@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const tempMovieData = [
   {
@@ -50,9 +50,41 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
+const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3YmQwZWU2ZTc2ZDNlYzJlOWIyZTkzOWM4NTBkOTM0YiIsIm5iZiI6MTczMjAyNzM2Mi44OTk3MDgzLCJzdWIiOiI2NmUwZmRhMjBiNmUwNzU0ZjdhZmRlMzEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.UeDSIArLT_v5eZsjrGLvyZUhasN6KCl5lu5OUT6jytM',
+  },
+};
+
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
+
+  function handleFetchData(data) {
+    const tempMovies = data.results.map((data) => {
+      return {
+        imdbID: data.id,
+        Title: data.original_title,
+        Year: data.release_date,
+        Poster: `https://image.tmdb.org/t/p/w500/${data.poster_path}`,
+      };
+    });
+
+    setMovies(tempMovies);
+  }
+
+  useEffect(() => {
+    fetch(
+      'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1',
+      options,
+    )
+      .then((res) => res.json())
+      .then((data) => handleFetchData(data))
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <>
