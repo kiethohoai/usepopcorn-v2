@@ -6,8 +6,13 @@ import StarRating from './StarRating';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {/* <StarRating maxRating={5} />
-    <StarRating maxRating={10} /> */}
     <StarRating />
+    <StarRating
+      size={28}
+      color="red"
+      className="test"
+      message={['Terible', 'Bad', 'Ok', 'Good', 'Amazing']}
+      defaultRating={3}
+    />
   </StrictMode>,
 );
