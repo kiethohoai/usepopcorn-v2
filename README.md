@@ -23,3 +23,4 @@
 ### 006 How Rendering Works The Render Phase
 ### 018 Section Summary Practical Takeaways
 ### 12 Effects and Data Fetching
+### 002 The Component Lifecycle
