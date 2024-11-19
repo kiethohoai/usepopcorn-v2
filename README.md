@@ -4,3 +4,4 @@
 ### 004 Splitting Components in Practice
 ### 005 Component Categories
 ### 006 Prop Drilling
+### 007 Component Composition
