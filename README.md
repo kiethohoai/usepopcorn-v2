@@ -5,3 +5,4 @@
 ### 005 Component Categories
 ### 006 Prop Drilling
 ### 007 Component Composition
+### 008 Fixing Prop Drilling With Composition (And Building a Layout)
