@@ -24,3 +24,4 @@
 ### 018 Section Summary Practical Takeaways
 ### 12 Effects and Data Fetching
 ### 002 The Component Lifecycle
+### 003 How NOT to Fetch Data in React
