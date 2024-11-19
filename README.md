@@ -12,3 +12,4 @@
 ### 011 Building a Reusable Star Rating Component
 ### 012 Creating the Stars
 ### 013 Handling Hover Events
+### 014 Props as a Component API
