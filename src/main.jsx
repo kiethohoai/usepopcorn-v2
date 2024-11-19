@@ -6,8 +6,8 @@ import StarRating from './StarRating';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <StarRating maxRating={5} />
-    <StarRating maxRating={10} />
+    {/* <StarRating maxRating={5} />
+    <StarRating maxRating={10} /> */}
     <StarRating />
   </StrictMode>,
 );

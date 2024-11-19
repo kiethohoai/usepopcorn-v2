@@ -10,3 +10,4 @@
 ### 009 Using Composition to Make a Reusable Box v2
 ### 010 Passing Elements as Props (Alternative to children)
 ### 011 Building a Reusable Star Rating Component
+### 012 Creating the Stars
