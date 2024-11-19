@@ -21,3 +21,4 @@
 ### 004 Instances and Elements in Practice
 ### 005 How Rendering Works Overview
 ### 006 How Rendering Works The Render Phase
+### 018 Section Summary Practical Takeaways
