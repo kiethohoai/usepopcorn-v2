@@ -56,12 +56,13 @@ const options = {
   },
 };
 
-const URL = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1`;
+const URL = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1999`;
 
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [err, setErr] = useState('');
 
   function handleConvertData(data) {
     const dataMovies = data.results.map((data) => {
@@ -78,11 +79,18 @@ export default function App() {
 
   useEffect(function () {
     async function fetchMovies() {
-      setIsLoading(true);
-      const res = await fetch(URL, options);
-      const data = await res.json();
-      handleConvertData(data);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const res = await fetch(URL, options);
+        if (!res.ok) throw new Error(`Something went wrong. Fail to fetch movies!`);
+        const data = await res.json();
+        handleConvertData(data);
+      } catch (error) {
+        setErr(error.message);
+        console.error(`error:`, error.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchMovies();
   }, []);
@@ -95,7 +103,11 @@ export default function App() {
       </NavBar>
 
       <Main>
-        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
+        <Box>
+          {isLoading && <Loader />}
+          {!isLoading && !err && <MovieList />}
+          {err && <ErrorMessage message={err} />}
+        </Box>
 
         <Box>
           <WatchedSummary watched={watched} />
@@ -108,6 +120,14 @@ export default function App() {
 
 function Loader() {
   return <p className="loader">Loading...</p>;
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>❌</span> {message}
+    </p>
+  );
 }
 
 function NavBar({ children }) {
