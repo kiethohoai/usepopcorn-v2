@@ -67,7 +67,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState('');
   const [query, setQuery] = useState('');
-  const [selectedMovie, setSelectedMovie] = useState({});
+  const [selectedMovieId, setSelectedMovieId] = useState(null);
 
   function handleConvertData(data) {
     const dataMovies = data.results.map((data) => {
@@ -81,12 +81,12 @@ export default function App() {
     return dataMovies;
   }
 
-  function handleSelectMovie(movie) {
-    setSelectedMovie((curMovie) => (curMovie.imdbID === movie.imdbID ? {} : movie));
+  function handleSelectMovie(id) {
+    setSelectedMovieId((curId) => (curId === id ? null : id));
   }
 
   function handleCloseMovie() {
-    setSelectedMovie({});
+    setSelectedMovieId(null);
   }
 
   useEffect(
@@ -139,8 +139,8 @@ export default function App() {
         </Box>
 
         <Box>
-          {selectedMovie ? (
-            <MovieDetails selectedMovie={selectedMovie} onCloseMovie={handleCloseMovie} />
+          {selectedMovieId ? (
+            <MovieDetails selectedMovieId={selectedMovieId} onCloseMovie={handleCloseMovie} />
           ) : (
             <>
               <WatchedSummary watched={watched} />
@@ -233,7 +233,7 @@ function MovieList({ movies, onSelectMovie }) {
 
 function Movie({ movie, onSelectMovie }) {
   return (
-    <li onClick={() => onSelectMovie(movie)}>
+    <li onClick={() => onSelectMovie(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -246,13 +246,13 @@ function Movie({ movie, onSelectMovie }) {
   );
 }
 
-function MovieDetails({ selectedMovie, onCloseMovie }) {
+function MovieDetails({ selectedMovieId, onCloseMovie }) {
   return (
     <div className="details">
       <button className="btn-back" onClick={onCloseMovie}>
         &larr;
       </button>
-      {selectedMovie.imdbID}
+      {selectedMovieId}
     </div>
   );
 }
