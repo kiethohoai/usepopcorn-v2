@@ -61,6 +61,7 @@ const URL = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1`;
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleConvertData(data) {
     const dataMovies = data.results.map((data) => {
@@ -77,9 +78,11 @@ export default function App() {
 
   useEffect(function () {
     async function fetchMovies() {
+      setIsLoading(true);
       const res = await fetch(URL, options);
       const data = await res.json();
       handleConvertData(data);
+      setIsLoading(false);
     }
     fetchMovies();
   }, []);
@@ -92,9 +95,7 @@ export default function App() {
       </NavBar>
 
       <Main>
-        <Box>
-          <MovieList movies={movies} />
-        </Box>
+        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
 
         <Box>
           <WatchedSummary watched={watched} />
@@ -103,6 +104,10 @@ export default function App() {
       </Main>
     </>
   );
+}
+
+function Loader() {
+  return <p className="loader">Loading...</p>;
 }
 
 function NavBar({ children }) {
