@@ -5,8 +5,7 @@ const tempMovieData = [
     imdbID: 'tt1375666',
     Title: 'Inception',
     Year: '2010',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
+    Poster: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
   },
   {
     imdbID: 'tt0133093',
@@ -29,8 +28,7 @@ const tempWatchedData = [
     imdbID: 'tt1375666',
     Title: 'Inception',
     Year: '2010',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
+    Poster: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
     runtime: 148,
     imdbRating: 8.8,
     userRating: 10,
@@ -47,8 +45,7 @@ const tempWatchedData = [
   },
 ];
 
-const average = (arr) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const options = {
   method: 'GET',
@@ -59,12 +56,14 @@ const options = {
   },
 };
 
+const URL = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1`;
+
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
 
-  function handleFetchData(data) {
-    const tempMovies = data.results.map((data) => {
+  function handleConvertData(data) {
+    const dataMovies = data.results.map((data) => {
       return {
         imdbID: data.id,
         Title: data.original_title,
@@ -72,18 +71,17 @@ export default function App() {
         Poster: `https://image.tmdb.org/t/p/w500/${data.poster_path}`,
       };
     });
-
-    setMovies(tempMovies);
+    console.log(`🚀CHECK > dataMovies:`, dataMovies);
+    setMovies(dataMovies);
   }
 
-  useEffect(() => {
-    fetch(
-      'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1',
-      options,
-    )
-      .then((res) => res.json())
-      .then((data) => handleFetchData(data))
-      .catch((err) => console.error(err));
+  useEffect(function () {
+    async function fetchMovies() {
+      const res = await fetch(URL, options);
+      const data = await res.json();
+      handleConvertData(data);
+    }
+    fetchMovies();
   }, []);
 
   return (

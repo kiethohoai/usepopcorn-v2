@@ -27,3 +27,4 @@
 ### 003 How NOT to Fetch Data in React
 ### 004 useEffect to the Rescue
 ### 005 A First Look at Effects
+### 006 Using an async Function
