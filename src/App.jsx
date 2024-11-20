@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import StarRating from './StarRating/StarRating';
 
 /* 
 const tempMovieData = [
@@ -59,7 +60,7 @@ const options = {
   },
 };
 const URL = `https://api.themoviedb.org/3/search/movie`;
-const TEMP_QUERY = `interstellar`;
+// const TEMP_QUERY = `interstellar`;
 
 export default function App() {
   const [movies, setMovies] = useState([]);
@@ -82,7 +83,8 @@ export default function App() {
   }
 
   function handleSelectMovie(id) {
-    setSelectedMovieId((curId) => (curId === id ? null : id));
+    console.log(`🚀CHECK > id:`, id);
+    setSelectedMovieId((curId) => (curId === id ? null : +id));
   }
 
   function handleCloseMovie() {
@@ -102,7 +104,6 @@ export default function App() {
           if (!res.ok) throw new Error(`Something went wrong. Fail to fetch movies!`);
           const data = await res.json();
           const results = handleConvertData(data);
-          console.log(`🚀CHECK > results:`, results);
           setMovies(results);
         } catch (error) {
           setErr(error.message);
@@ -134,13 +135,18 @@ export default function App() {
       <Main>
         <Box>
           {isLoading && <Loader />}
-          {!isLoading && !err && <MovieList movies={movies} onSelectMovie={handleSelectMovie} />}
+          {!isLoading && !err && (
+            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
           {err && <ErrorMessage message={err} />}
         </Box>
 
         <Box>
           {selectedMovieId ? (
-            <MovieDetails selectedMovieId={selectedMovieId} onCloseMovie={handleCloseMovie} />
+            <MovieDetails
+              selectedMovieId={selectedMovieId}
+              onCloseMovie={handleCloseMovie}
+            />
           ) : (
             <>
               <WatchedSummary watched={watched} />
@@ -247,12 +253,73 @@ function Movie({ movie, onSelectMovie }) {
 }
 
 function MovieDetails({ selectedMovieId, onCloseMovie }) {
+  const [movie, setMovie] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const curMovie = {
+    Title: movie.title,
+    Year: movie.release_date,
+    Poster: `https://image.tmdb.org/t/p/w500/${movie.poster_path}`,
+    runtime: movie.runtime,
+    imdbRating: movie.vote_average,
+    Plot: movie.overview,
+    Released: movie.release_date,
+    Actors: 'Actors',
+    Director: 'Director',
+    Genre: movie.original_title,
+  };
+
+  useEffect(() => {
+    async function getMovieDetails() {
+      setIsLoading(true);
+      const res = await fetch(
+        `https://api.themoviedb.org/3/movie/${selectedMovieId}?language=en-US`,
+        options,
+      );
+
+      const data = await res.json();
+      setMovie(data);
+      setIsLoading(false);
+    }
+    getMovieDetails();
+  }, [selectedMovieId]);
+
   return (
     <div className="details">
-      <button className="btn-back" onClick={onCloseMovie}>
-        &larr;
-      </button>
-      {selectedMovieId}
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <header>
+            <button className="btn-back" onClick={onCloseMovie}>
+              &larr;
+            </button>
+            <img src={curMovie.Poster} alt={curMovie.Title} />
+            <div className="details-overview">
+              <h2>{curMovie.Title}</h2>
+              <p>
+                {curMovie.Released} &bull; {curMovie.runtime} mins
+              </p>
+              <p>{curMovie.Genre} </p>
+              <p>
+                <span>⭐</span>
+                {curMovie.imdbRating} IMDb Rating
+              </p>
+            </div>
+          </header>
+
+          <section>
+            <div className="rating">
+              <StarRating size={26} maxRating={10} />
+            </div>
+            <p>
+              <em>{curMovie.Plot} </em>
+            </p>
+            <p>Staring {curMovie.Actors}</p>
+            <p>Directed by {curMovie.Director}</p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
