@@ -32,3 +32,4 @@
 ### 008 Handling Errors
 ### 009 The useEffect Dependency Array
 ### 010 Synchronizing Queries With Movie Data
+### 011 Selecting a Movie
