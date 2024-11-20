@@ -30,3 +30,4 @@
 ### 006 Using an async Function
 ### 007 Adding a Loading State
 ### 008 Handling Errors
+### 009 The useEffect Dependency Array
