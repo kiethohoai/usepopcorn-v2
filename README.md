@@ -31,3 +31,4 @@
 ### 007 Adding a Loading State
 ### 008 Handling Errors
 ### 009 The useEffect Dependency Array
+### 010 Synchronizing Queries With Movie Data

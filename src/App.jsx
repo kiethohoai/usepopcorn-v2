@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+/* 
 const tempMovieData = [
   {
     imdbID: 'tt1375666',
@@ -44,9 +45,11 @@ const tempWatchedData = [
     userRating: 9,
   },
 ];
+ */
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
+/* API DATA */
 const options = {
   method: 'GET',
   headers: {
@@ -55,14 +58,15 @@ const options = {
       'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3YmQwZWU2ZTc2ZDNlYzJlOWIyZTkzOWM4NTBkOTM0YiIsIm5iZiI6MTczMjAyNzM2Mi44OTk3MDgzLCJzdWIiOiI2NmUwZmRhMjBiNmUwNzU0ZjdhZmRlMzEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.UeDSIArLT_v5eZsjrGLvyZUhasN6KCl5lu5OUT6jytM',
   },
 };
-
-const URL = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1999`;
+const URL = `https://api.themoviedb.org/3/search/movie`;
+const TEMP_QUERY = `interstellar`;
 
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState('');
+  const [query, setQuery] = useState('');
 
   function handleConvertData(data) {
     const dataMovies = data.results.map((data) => {
@@ -73,39 +77,52 @@ export default function App() {
         Poster: `https://image.tmdb.org/t/p/w500/${data.poster_path}`,
       };
     });
-    console.log(`🚀CHECK > dataMovies:`, dataMovies);
-    setMovies(dataMovies);
+    return dataMovies;
   }
 
-  useEffect(function () {
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        const res = await fetch(URL, options);
-        if (!res.ok) throw new Error(`Something went wrong. Fail to fetch movies!`);
-        const data = await res.json();
-        handleConvertData(data);
-      } catch (error) {
-        setErr(error.message);
-        console.error(`error:`, error.message);
-      } finally {
-        setIsLoading(false);
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          setErr('');
+          const res = await fetch(`${URL}?query=${query}&include_adult=false&language=en-US&page=1`, options);
+          if (!res.ok) throw new Error(`Something went wrong. Fail to fetch movies!`);
+          const data = await res.json();
+          const results = handleConvertData(data);
+          console.log(`🚀CHECK > results:`, results);
+          setMovies(results);
+        } catch (error) {
+          setErr(error.message);
+          console.error(`error:`, error.message);
+        } finally {
+          setIsLoading(false);
+        }
       }
-    }
-    fetchMovies();
-  }, []);
+
+      // Guard
+      if (query.length <= 3) {
+        setMovies([]);
+        setErr('');
+        return;
+      }
+
+      fetchMovies();
+    },
+    [query],
+  );
 
   return (
     <>
       <NavBar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
 
       <Main>
         <Box>
           {isLoading && <Loader />}
-          {!isLoading && !err && <MovieList />}
+          {!isLoading && !err && <MovieList movies={movies} />}
           {err && <ErrorMessage message={err} />}
         </Box>
 
@@ -148,9 +165,7 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState('');
-
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
@@ -187,31 +202,6 @@ function Box({ children }) {
     </div>
   );
 }
-
-/*
-function WatchedBox() {
-  const [watched, setWatched] = useState(tempWatchedData);
-  const [isOpen2, setIsOpen2] = useState(true);
-
-  return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button>
-
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-          <WatchedMoviesList watched={watched} />
-        </>
-      )}
-    </div>
-  );
-}
-*/
 
 function MovieList({ movies }) {
   return (
