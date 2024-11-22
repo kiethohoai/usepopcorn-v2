@@ -321,6 +321,10 @@ function MovieDetails({ selectedMovieId, onCloseMovie, onAddWatched, watched }) 
   // Changging title of web page
   useEffect(() => {
     document.title = `Movie: ${movie.title ? movie.title : ''}`;
+
+    return () => {
+      document.title = `usePopcorn`;
+    };
   }, [movie]);
 
   return (

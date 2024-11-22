@@ -38,3 +38,4 @@
 ### 013 Adding a Watched Movie
 ### 014 Adding a New Effect Changing Page Title
 ### 015 The useEffect Cleanup Function
+### 016 Cleaning Up the Title
