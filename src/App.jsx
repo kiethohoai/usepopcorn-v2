@@ -101,21 +101,25 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
+
       async function fetchMovies() {
         try {
           setIsLoading(true);
           setErr('');
           const res = await fetch(
             `${URL}?query=${query}&include_adult=false&language=en-US&page=1`,
-            options,
+            { signal: controller.signal, ...options },
           );
           if (!res.ok) throw new Error(`Something went wrong. Fail to fetch movies!`);
           const data = await res.json();
           const results = handleConvertData(data);
           setMovies(results);
         } catch (error) {
-          setErr(error.message);
-          console.error(`error:`, error.message);
+          console.error(`error:`, error);
+          if (error.name !== 'AbortError') {
+            setErr(error.message);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -129,6 +133,10 @@ export default function App() {
       }
 
       fetchMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query],
   );
