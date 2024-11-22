@@ -17,11 +17,16 @@ const URL = `https://api.themoviedb.org/3/search/movie`;
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState('');
   const [query, setQuery] = useState('');
   const [selectedMovieId, setSelectedMovieId] = useState(null);
+  // const [watched, setWatched] = useState([]);
+
+  const [watched, setWatched] = useState(() => {
+    const storedValue = localStorage.getItem('watched');
+    return JSON.parse(storedValue);
+  });
 
   function handleConvertData(data) {
     const dataMovies = data.results.map((data) => {
@@ -45,11 +50,17 @@ export default function App() {
 
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
+    // localStorage.setItem('watched', JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((mov) => mov.imdbID !== id));
   }
+
+  // Save watched movies to localStorage
+  useEffect(() => {
+    localStorage.setItem('watched', JSON.stringify(watched));
+  }, [watched]);
 
   useEffect(
     function () {
