@@ -318,6 +318,11 @@ function MovieDetails({ selectedMovieId, onCloseMovie, onAddWatched, watched }) 
     getMovieDetails();
   }, [selectedMovieId]);
 
+  // Changging title of web page
+  useEffect(() => {
+    document.title = `Movie: ${movie.title ? movie.title : ''}`;
+  }, [movie]);
+
   return (
     <div className="details">
       {isLoading ? (
