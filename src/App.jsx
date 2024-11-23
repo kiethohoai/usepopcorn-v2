@@ -1,44 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import StarRating from './StarRating/StarRating';
+import { useMovies } from './useMovies';
+import { options } from './config';
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-/* API DATA */
-const options = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3YmQwZWU2ZTc2ZDNlYzJlOWIyZTkzOWM4NTBkOTM0YiIsIm5iZiI6MTczMjAyNzM2Mi44OTk3MDgzLCJzdWIiOiI2NmUwZmRhMjBiNmUwNzU0ZjdhZmRlMzEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.UeDSIArLT_v5eZsjrGLvyZUhasN6KCl5lu5OUT6jytM',
-  },
-};
-const URL = `https://api.themoviedb.org/3/search/movie`;
-// const TEMP_QUERY = `interstellar`;
-
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [err, setErr] = useState('');
   const [query, setQuery] = useState('');
   const [selectedMovieId, setSelectedMovieId] = useState(null);
 
-  // const [watched, setWatched] = useState([]);
   const [watched, setWatched] = useState(() => {
     const storedValue = localStorage.getItem('watched');
     return JSON.parse(storedValue);
   });
 
-  function handleConvertData(data) {
-    const dataMovies = data.results.map((data) => {
-      return {
-        imdbID: data.id,
-        Title: data.original_title,
-        Year: data.release_date,
-        Poster: `https://image.tmdb.org/t/p/w500/${data.poster_path}`,
-      };
-    });
-    return dataMovies;
-  }
+  const { movies, isLoading, err } = useMovies(query);
 
   function handleSelectMovie(id) {
     setSelectedMovieId((curId) => (curId === id ? null : +id));
@@ -62,6 +38,7 @@ export default function App() {
     localStorage.setItem('watched', JSON.stringify(watched));
   }, [watched]);
 
+  /* 
   useEffect(
     function () {
       const controller = new AbortController();
@@ -103,6 +80,7 @@ export default function App() {
     },
     [query],
   );
+   */
 
   return (
     <>
