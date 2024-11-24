@@ -1,87 +1,17 @@
-import { useEffect, useState } from 'react';
-import StarRating from './StarRating/StarRating';
-
-/* 
-const tempMovieData = [
-  {
-    imdbID: 'tt1375666',
-    Title: 'Inception',
-    Year: '2010',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-  },
-  {
-    imdbID: 'tt0133093',
-    Title: 'The Matrix',
-    Year: '1999',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
-  },
-  {
-    imdbID: 'tt6751668',
-    Title: 'Parasite',
-    Year: '2019',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg',
-  },
-]; */
-
-const tempWatchedData = [
-  {
-    imdbID: 'tt1375666',
-    Title: 'Inception',
-    Year: '2010',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: 'tt0088763',
-    Title: 'Back to the Future',
-    Year: '1985',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
+import { useEffect, useRef, useState } from 'react';
+import StarRating from '../StarRating/StarRating';
+import { useMovies } from './useMovies';
+import { options } from './config';
+import { useLocalStorage } from './useLocalStorage';
+import { useKey } from './useKey';
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-/* API DATA */
-const options = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3YmQwZWU2ZTc2ZDNlYzJlOWIyZTkzOWM4NTBkOTM0YiIsIm5iZiI6MTczMjAyNzM2Mi44OTk3MDgzLCJzdWIiOiI2NmUwZmRhMjBiNmUwNzU0ZjdhZmRlMzEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.UeDSIArLT_v5eZsjrGLvyZUhasN6KCl5lu5OUT6jytM',
-  },
-};
-const URL = `https://api.themoviedb.org/3/search/movie`;
-// const TEMP_QUERY = `interstellar`;
-
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(tempWatchedData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [err, setErr] = useState('');
   const [query, setQuery] = useState('');
   const [selectedMovieId, setSelectedMovieId] = useState(null);
-
-  function handleConvertData(data) {
-    const dataMovies = data.results.map((data) => {
-      return {
-        imdbID: data.id,
-        Title: data.original_title,
-        Year: data.release_date,
-        Poster: `https://image.tmdb.org/t/p/w500/${data.poster_path}`,
-      };
-    });
-    return dataMovies;
-  }
+  const { movies, isLoading, err } = useMovies(query);
+  const [watched, setWatched] = useLocalStorage([], 'watched');
 
   function handleSelectMovie(id) {
     setSelectedMovieId((curId) => (curId === id ? null : +id));
@@ -93,12 +23,16 @@ export default function App() {
 
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
+    // localStorage.setItem('watched', JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((mov) => mov.imdbID !== id));
   }
 
+  // Save watched movies to localStorage
+
+  /* 
   useEffect(
     function () {
       const controller = new AbortController();
@@ -140,6 +74,7 @@ export default function App() {
     },
     [query],
   );
+   */
 
   return (
     <>
@@ -211,6 +146,14 @@ function Logo() {
 }
 
 function Search({ query, setQuery }) {
+  const inputEl = useRef(null);
+
+  useKey('Enter', function () {
+    if (document.activeElement === inputEl.current) return;
+    inputEl.current.focus();
+    setQuery('');
+  });
+
   return (
     <input
       className="search"
@@ -218,6 +161,7 @@ function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
@@ -278,6 +222,8 @@ function MovieDetails({ selectedMovieId, onCloseMovie, onAddWatched, watched }) 
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState(null);
 
+  const countRef = useRef(0);
+
   const isWatched = watched.map((mov) => mov.imdbID).includes(selectedMovieId);
   const watchedUserRating = watched.find(
     (item) => item.imdbID === selectedMovieId,
@@ -305,25 +251,18 @@ function MovieDetails({ selectedMovieId, onCloseMovie, onAddWatched, watched }) 
       imdbRating: movie.vote_average,
       userRating: userRating ? userRating : 0,
       runtime: movie.runtime,
+      countRatingDecisions: countRef.current,
     };
 
     onAddWatched(newMovie);
     onCloseMovie();
   }
 
+  useKey(`Escape`, onCloseMovie);
+
   useEffect(() => {
-    function callback(e) {
-      if (e.code === 'Escape') {
-        onCloseMovie();
-      }
-    }
-
-    document.addEventListener('keydown', callback);
-
-    return () => {
-      document.removeEventListener('keydown', callback);
-    };
-  }, [onCloseMovie]);
+    if (userRating) countRef.current = countRef.current + 1;
+  }, [userRating]);
 
   useEffect(() => {
     async function getMovieDetails() {
