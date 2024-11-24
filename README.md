@@ -63,5 +63,6 @@
 ### 005 The React Quiz App
 ### 006 Loading Questions from a Fake API
 ### 007 Handling Loading, Error, and Ready Status
+### 008 Starting a New Quiz
 
 

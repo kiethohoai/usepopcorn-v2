@@ -5,6 +5,7 @@ import { useReducer } from 'react';
 import Loader from './Loader';
 import Error from './Error';
 import StartScreen from './StartScreen';
+import Questions from './Questions';
 
 const initialState = {
   questions: [],
@@ -24,6 +25,11 @@ function reducer(state, action) {
         ...state,
         status: `error`,
       };
+    case 'start':
+      return {
+        ...state,
+        status: `active`,
+      };
     default:
       throw new Error(`Something went wrong!`);
   }
@@ -39,13 +45,17 @@ export default function App() {
       .then((data) => dispatch({ type: 'dataReceived', payload: data }))
       .catch(() => dispatch({ type: 'dataFailed' }));
   }, []);
+
   return (
     <div className="app">
       <Header />
       <MainApp>
         {status === 'loading' && <Loader />}
         {status === 'error' && <Error />}
-        {status === 'ready' && <StartScreen numQuestions={numQuestions} />}
+        {status === 'ready' && (
+          <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
+        )}
+        {status === 'active' && <Questions />}
       </MainApp>
     </div>
   );
