@@ -62,5 +62,6 @@
 ### 004 Managing State With useReducer
 ### 005 The React Quiz App
 ### 006 Loading Questions from a Fake API
+### 007 Handling Loading, Error, and Ready Status
 
 
