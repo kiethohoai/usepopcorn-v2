@@ -69,4 +69,5 @@
 ### 011 Moving to the Next Question
 ### 012 Displaying Progress
 ### 013 Finishing a Quiz
+### 014 Restarting a Quiz
 
